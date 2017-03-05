@@ -15,38 +15,60 @@
 			
 			function getStopData() {
                 // get stops from URL
-                var stopRefs = new Array();
+                var stopRefs = {};
+                var numStops = 0;
                 location.search // URL after and including "?"
                     .substr(1) // ignore "?"
                     .split('&') // get each GET term
                     .forEach(function(item) {
-                        if (item.split('=')[0] == 'stop_ref') {
-                            stopRefs.push(item.split('=')[1]);
+                        if (item.split('=')[0] == 'stop_num') {
+                            let wrapper = document.createElement('div');
+                            document.getElementById('tableOfData').appendChild(wrapper);
+                            stopRefs[item.split('=')[1]] = wrapper;
+                            numStops += 1;
                         }
                     });
                     // GET params from URL. see: http://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
                 
                 // get stop data from API and display
-                if (stopRefs.length === 0) {
-                    let html = '<h1>Error - Please specify at least one stop_ref parameter in URL</h1><p>Example: stop.html?stop_ref=523311&stop_ref=523561</p>';
-                    document.getElementById('tableData').innerHTML = html;
+                if (numStops === 0) {
+                    let html = '<h2>Error - Please specify at least one stop_num parameter in URL</h2><p>Example: stop.html?stop_num=523311&stop_num=523561</p>';
+                    document.getElementsByTagName('body')[0].innerHTML = html;
                 } else {
+                    let stopsToRetrieve = numStops;
+                    let whichOneIsLast = numStops;
                     // get one stop, log its name and next stops
                     $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
                         data.forEach(function(stop) {
-                            if (stopRefs.indexOf(stop.stop_ref) != -1) {
+                            if (stop.stop_ref in stopRefs) {
+                                // store properties in block-scoped variables:
                                 let stopName = stop.long_name; // or, short_name
                                 let stopRef = stop.stop_ref;
+                                
+                                let lastOne = --whichOneIsLast == 0;
+                                
+                                let wrapper = stopRefs[stop.stop_ref];
+                                let title = document.createElement('h3');
+                                title.innerHTML = stopName + ' <small><em>' + stopRef + '</em></small>';
+                                wrapper.appendChild(title);
+                                let elem = document.createElement('table');
                                 $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
-                                    let html = '<h3>' + stopName + ' - ' + stopRef + '</h3>';
-                                    html += "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
+                                    let html = "<tr><th>Route</th><th>Destination</th><th>Time</th></tr>";
                                     data.times.forEach(function(time) {
                                         let hack_timestamp = '' + time.depart_timestamp;
                                         hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
                                         html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
                                     });
-                                    html += "</table>";
-                                    document.getElementById('tableData').innerHTML += html;
+                                    elem.innerHTML = html;
+                                    wrapper.appendChild(elem);
+                                    if (!lastOne) {
+                                        wrapper.appendChild(document.createElement('hr'));
+                                    }
+                                    
+                                    if (--stopsToRetrieve == 0) {
+                                        document.getElementById('loadingTitle').innerHTML = 'All Loaded!';
+                                        window.setTimeout(function() { document.getElementById('loadingTitle').remove(); }, 1000);
+                                    }
                                 });
                             }
                         });
@@ -58,7 +80,7 @@
 		
 	</head>
 	<body onload="getStopData();">
-        <h2>Requested Bus Stops</h2>
-		<div id="tableData"/>
+        <h2 id="loadingTitle">Loading Requested Bus Stops...</h2>
+		<div id="tableOfData" />
 	</body>
 </html>
