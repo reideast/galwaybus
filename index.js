@@ -150,7 +150,7 @@ var parseTimesForStopRef = function(stop_ref) {
 // except for the index.html request.
 app.use(function(req, res, next) {
 	
-	if ((req.url == '/') || (req.url == '/index.html' || req.url == '/index.html?stop_ref=522561')) {
+	if ((req.url == '/') || (req.url == '/index.html' || req.url == '/stop.html?stop_ref=522561')) {
 		res.contentType('text/html');
 	}
 	else {

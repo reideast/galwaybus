@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2014 Vinny Coyne (http://www.vinnycoyne.com) -->
+<html>
+	<head>
+		<title>Galway Bus Real-Time Info</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+		<script type="text/javascript" src="jquery.timeago.js"></script>
+		
+		<script type="text/javascript">
+			
+			jQuery.timeago.settings.allowFuture = true;
+			jQuery.timeago.settings.strings.inPast = "Due";
+			jQuery.timeago.settings.allowPast = false;
+			
+			function getStopData() {
+                var stopRefs = new Array();
+                // GET params from URL. see: http://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
+                location.search // URL after and including "?"
+                    .substr(1) // ignore "?"
+                    .split('&') // get each GET term
+                    .forEach(function(item) {
+                        if (item.split('=')[0] == 'stop_ref') {
+                            stopRefs.push(item.split('=')[1]);
+                        }
+                    });
+                console.log("found from URL:");
+                console.log(stopRefs);
+                // get one stop, log its name and next stops
+                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
+					data.forEach(function(stop) {
+                        if (stopRefs.indexOf(stop.stop_ref) != -1) {
+                            console.log(stop.short_name);
+                            console.log(stop.long_name);
+                            console.log(stop.stop_ref);
+                            $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
+                                var html = "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
+                                data.times.forEach(function(time) {
+                                    var hack_timestamp = '' + time.depart_timestamp;
+                                    hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
+                                    html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
+                                });
+                                html += "</table>";
+                                console.log(html);
+                            });
+                        }
+					});
+                });
+			}
+		  
+		</script>
+		
+	</head>
+	<body onload="getStopData();">
+		<div id="tableData"/>
+	</body>
+</html>
