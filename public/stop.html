@@ -14,8 +14,8 @@
 			jQuery.timeago.settings.allowPast = false;
 			
 			function getStopData() {
+                // get stops from URL
                 var stopRefs = new Array();
-                // GET params from URL. see: http://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
                 location.search // URL after and including "?"
                     .substr(1) // ignore "?"
                     .split('&') // get each GET term
@@ -24,34 +24,41 @@
                             stopRefs.push(item.split('=')[1]);
                         }
                     });
-                console.log("found from URL:");
-                console.log(stopRefs);
-                // get one stop, log its name and next stops
-                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
-					data.forEach(function(stop) {
-                        if (stopRefs.indexOf(stop.stop_ref) != -1) {
-                            console.log(stop.short_name);
-                            console.log(stop.long_name);
-                            console.log(stop.stop_ref);
-                            $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
-                                var html = "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
-                                data.times.forEach(function(time) {
-                                    var hack_timestamp = '' + time.depart_timestamp;
-                                    hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
-                                    html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
+                    // GET params from URL. see: http://stackoverflow.com/questions/19491336/get-url-parameter-jquery-or-how-to-get-query-string-values-in-js
+                
+                // get stop data from API and display
+                if (stopRefs.length === 0) {
+                    let html = '<h1>Error - Please specify at least one stop_ref parameter in URL</h1><p>Example: stop.html?stop_ref=523311&stop_ref=523561</p>';
+                    document.getElementById('tableData').innerHTML = html;
+                } else {
+                    // get one stop, log its name and next stops
+                    $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
+                        data.forEach(function(stop) {
+                            if (stopRefs.indexOf(stop.stop_ref) != -1) {
+                                let stopName = stop.long_name; // or, short_name
+                                let stopRef = stop.stop_ref;
+                                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
+                                    let html = '<h3>' + stopName + ' - ' + stopRef + '</h3>';
+                                    html += "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
+                                    data.times.forEach(function(time) {
+                                        let hack_timestamp = '' + time.depart_timestamp;
+                                        hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
+                                        html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
+                                    });
+                                    html += "</table>";
+                                    document.getElementById('tableData').innerHTML += html;
                                 });
-                                html += "</table>";
-                                console.log(html);
-                            });
-                        }
-					});
-                });
+                            }
+                        });
+                    });
+                }
 			}
 		  
 		</script>
 		
 	</head>
 	<body onload="getStopData();">
+        <h2>Requested Bus Stops</h2>
 		<div id="tableData"/>
 	</body>
 </html>
