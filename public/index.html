@@ -1,6 +1,5 @@
-<!-- Copyright (c) 2014 Vinny Coyne (http://www.vinnycoyne.com) -->
-
 <!DOCTYPE html>
+<!-- Copyright (c) 2014 Vinny Coyne (http://www.vinnycoyne.com) -->
 <html>
 	<head>
 		<title>Galway Bus Real-Time Info</title>
@@ -62,10 +61,13 @@
 			
 			
 			function getAllStops() {
-                // get one stop, lot its name and next stops
+                var valueStopRef;
+                location.search.substr(1).split('&').some(function(item) { return item.split('=')[0] == 'stop_ref' && (valueStopRef = item.split('=')[1]) });
+                console.log("found from URL: " + valueStopRef);
+                // get one stop, log its name and next stops
                 $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
 					data.forEach(function(stop) {
-                        if (stop.stop_ref == "522561") {
+                        if (stop.stop_ref == valueStopRef) {
                             console.log(stop.short_name);
                             console.log(stop.long_name);
                             console.log(stop.stop_ref);
