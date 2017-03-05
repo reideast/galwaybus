@@ -37,7 +37,8 @@
 			
 			
 			function timesForStopRef(stopRef, infowindow, map, marker) {
-				
+				console.log("Opening a stop, ref:");
+                console.log(stopRef);
 				$.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stopRef +'.json', function (data) {
 					
 					var html = "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
@@ -61,7 +62,27 @@
 			
 			
 			function getAllStops() {
-			
+                // get one stop, lot its name and next stops
+                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
+					data.forEach(function(stop) {
+                        if (stop.stop_ref == "522561") {
+                            console.log(stop.short_name);
+                            console.log(stop.long_name);
+                            console.log(stop.stop_ref);
+                            $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
+                                var html = "<table><tr><td>Route</td><td>Destination</td><td>Time</td></tr>";
+                                data.times.forEach(function(time) {
+                                    var hack_timestamp = '' + time.depart_timestamp;
+                                    hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
+                                    html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
+                                });
+                                html += "</table>";
+                                console.log(html);
+                            });
+                        }
+					});
+                });
+                
 				$.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
 					
 					data.forEach(function(stop) {
@@ -76,7 +97,7 @@
 						var infowindow = new google.maps.InfoWindow({
 							content: stop.long_name
 						});
-						console.log(stop.stop_ref);
+
 						google.maps.event.addListener(marker, 'click', function() {
 							infowindow.open(map,marker);
 							timesForStopRef(stop.stop_ref, infowindow, map, marker);
