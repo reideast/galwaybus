@@ -1,3 +1,16 @@
+# Modifications to Galway Bus API
+##Forked from Vinny Coyne [http://www.vinnycoyne.com](http://www.vinnycoyne.com)
+
+I added a page to list bus times for stops you request in the URL: stops.html. Use the URL param "stop_num" to refer to a 6-digit stop reference number. This is a flat, simple page that requires a refresh to re-run the API requests. It can displays muliple stops if multiple stop_num's are specified.
+
+### Example:
+
+`stops.html?stop_num=522561&stop_num=524121`
+
+You can access a running version at: [https://intense-ocean-53209.herokuapp.com/stop.html?stop_num=522561&stop_num=524121](https://intense-ocean-53209.herokuapp.com/stop.html?stop_num=522561&stop_num=524121)
+
+Use [https://intense-ocean-53209.herokuapp.com/stopFinder.html](https://intense-ocean-53209.herokuapp.com/stopFinder.html) to easily find those 6-digit stop numbers.
+
 # Galway Bus RTPI API
 
 The rtpi.ie website has access to real-time data for the Galway Bus Éireann transit system. Unfortunately, this data is not officially accessible to developers, and is in a weird, proprietary, JSON-ish format. The aim of this project is to provide a simple API to access this data, returning it in a valid JSON format. It was also a good excuse to finally learn how to use node.js :)
