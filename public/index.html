@@ -76,7 +76,7 @@
 						var infowindow = new google.maps.InfoWindow({
 							content: stop.long_name
 						});
-						
+						console.log(stop.stop_ref);
 						google.maps.event.addListener(marker, 'click', function() {
 							infowindow.open(map,marker);
 							timesForStopRef(stop.stop_ref, infowindow, map, marker);
