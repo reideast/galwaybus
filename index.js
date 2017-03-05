@@ -150,7 +150,7 @@ var parseTimesForStopRef = function(stop_ref) {
 // except for the index.html request.
 app.use(function(req, res, next) {
 	
-	if ((req.url == '/') || req.url == '/index.html' || req.path == '/stop.html') { // use req.path so stop.html can have a query string in URL and still be treated as text/html
+	if ((req.url == '/') || req.url == '/index.html' || req.url == '/stopFinder.html' || req.path == '/stop.html') { // use req.path so stop.html can have a query string in URL and still be treated as text/html
 		res.contentType('text/html');
 	}
 	else {
