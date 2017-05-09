@@ -45,6 +45,7 @@
 					data.times.forEach(function(time) {
 						
 						var hack_timestamp = '' + time.depart_timestamp;
+                        console.log('hack_timestamp="' + hack_timestamp + '"');
 						hack_timestamp = hack_timestamp.substring(0, hack_timestamp.length - 5) + 'Z';
 						
 						html += "<tr><td>" + time.timetable_id + "</td><td>" + time.display_name + "</td><td>" + jQuery.timeago(hack_timestamp) + "</td></tr>";
