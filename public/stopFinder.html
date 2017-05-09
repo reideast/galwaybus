@@ -43,7 +43,7 @@
 			
 			function getAllStops() {
                 
-				$.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
+				$.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json?callback=?', function (data) {
 					
 					data.forEach(function(stop) {
 						
