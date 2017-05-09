@@ -38,7 +38,7 @@
                     let stopsToRetrieve = numStops;
                     let whichOneIsLast = numStops;
                     // get one stop, log its name and next stops
-                    $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json?callback=?', function (data) {
+                    $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops.json', function (data) {
                         data.forEach(function(stop) {
                             if (stop.stop_ref in stopRefs) {
                                 // store properties in block-scoped variables:
@@ -52,7 +52,7 @@
                                 title.innerHTML = stopName + ' <small><em>' + stopRef + '</em></small>';
                                 wrapper.appendChild(title);
                                 let elem = document.createElement('table');
-                                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json?callback=?', function (data) {
+                                $.getJSON(window.location.protocol + '//intense-ocean-53209.herokuapp.com/stops/' + stop.stop_ref +'.json', function (data) {
                                     let html = "<tr><th>Route</th><th>Destination</th><th>Time</th></tr>";
                                     data.times.forEach(function(time) {
                                         let hack_timestamp = '' + time.depart_timestamp;
