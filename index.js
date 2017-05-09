@@ -146,6 +146,15 @@ var parseTimesForStopRef = function(stop_ref) {
 
 // ROUTING
 
+// Allow CORS - Cross-site requests for API
+// see: http://stackoverflow.com/a/11607904
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 // Always use application/json;charset=utf-8 as the Content-Type,
 // except for the index.html request.
 app.use(function(req, res, next) {
